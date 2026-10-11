@@ -5484,7 +5484,7 @@ tasks:
       or missing) and point the footer at it, so reports are classified without
       a maintainer relabelling them."
     source_links: []
-    status: ready
+    status: done
     priority: P3
     labels:
       - docs
@@ -5515,7 +5515,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-10-11T15:49:55.592Z
-    updated_at: 2026-10-11T15:49:55.592Z
+    updated_at: 2026-10-11T16:18:30.687Z
   - id: task_103
     title: "Docs: derive the legacy anchor map instead of hand-maintaining it"
     description: Deferred from the 2026-10-11 docs audit (deferred work item 5). A
@@ -5612,3 +5612,94 @@ tasks:
       push_comments: false
     created_at: 2026-10-11T15:50:20.698Z
     updated_at: 2026-10-11T15:53:47.853Z
+  - id: task_105
+    title: Add a Code of Conduct (Contributor Covenant 2.1)
+    description: "The repository has no community health files: no
+      CODE_OF_CONDUCT.md, no root CONTRIBUTING.md, and no
+      .github/ISSUE_TEMPLATE/, so GitHub's community profile is incomplete.
+      Adopt Contributor Covenant 2.1 as the Code of Conduct, with the
+      enforcement placeholder replaced by the repository's private reporting
+      route (the GitHub private vulnerability reporting form) and a short note
+      on how a report is handled here."
+    source_links: []
+    status: done
+    priority: P3
+    labels:
+      - process
+      - docs
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - CODE_OF_CONDUCT.md at the repository root reproduces Contributor
+        Covenant 2.1 verbatim, with the enforcement contact filled in and no
+        [INSERT CONTACT METHOD] placeholder left
+      - The published contact is a private route (the GitHub private
+        vulnerability reporting form) and the file states how a report is
+        handled here without editing the canonical sections
+      - README.md and CONTRIBUTING.md link the Code of Conduct, and GitHub's
+        community profile lists it
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T16:13:59.288Z
+    updated_at: 2026-10-11T16:18:31.199Z
+  - id: task_106
+    title: Add a root CONTRIBUTING.md
+    description: "Contribution guidance is scattered: README.md has a Contributing
+      section, apps/docs/src/content/docs/project/contributing.md covers docs
+      work, .backlog/docs/workflow.md holds the working agreements, and
+      apps/docs/README.md holds the docs writing contract. GitHub recognises
+      only a root CONTRIBUTING.md, so add a short router that points at the
+      issue forms for each intent, the change-proposal rules, the exact gates,
+      and where the working agreements live."
+    source_links: []
+    status: done
+    priority: P3
+    labels:
+      - process
+      - docs
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - "CONTRIBUTING.md exists at the repository root and routes each kind of
+        contribution: bug, feature, and docs reports (the three issue forms),
+        plus a statement that security-sensitive reports are not filed publicly"
+      - It lists the exact gates from the README Development section (bun
+        install --frozen-lockfile, bun run lint, typecheck, test:all,
+        docs:build, docs:test) and notes that docs:test needs a built package,
+        which turbo handles
+      - It links .backlog/docs/workflow.md, apps/docs/README.md,
+        .backlog/docs/adr/, and CODE_OF_CONDUCT.md
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T16:14:02.348Z
+    updated_at: 2026-10-11T16:18:31.701Z

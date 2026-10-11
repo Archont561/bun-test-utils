@@ -1,0 +1,71 @@
+name: Feature request
+description: Propose a capability, an API, or a change to how the package works
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The package's guiding rules are in the docs:
+        [Stability, compatibility, and support](https://archont561.github.io/bun-test-utils/overview/compatibility/)
+        says which surfaces are contractual, and
+        [The fixture model](https://archont561.github.io/bun-test-utils/fundamentals/fixture-model/)
+        is what a new capability is built on. A proposal that fits them lands faster.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: |
+        What are you trying to do, and where does the current API make it awkward
+        or impossible? Describe the situation rather than the fix.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-shape
+    attributes:
+      label: The shape you propose
+      description: |
+        How the API should look: the names a test would import, the call, and what
+        it returns. A few lines of code that do not run yet are enough.
+      placeholder: |
+        const test = base.extend({
+          thing: {
+            scope: "file",
+            setup: async (use) => {
+              await use(await makeThing());
+            },
+          },
+        });
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: |
+        What you tried instead — an existing fixture, a wrapper you wrote, a
+        different name or scope — and why it fell short.
+    validations:
+      required: true
+  - type: dropdown
+    id: stable-surface
+    attributes:
+      label: Does this change a stable surface?
+      description: |
+        A change to a stable surface needs a major version and is weighed
+        differently from an addition. See Stability, compatibility, and support.
+      options:
+        - No — it is additive and leaves existing behaviour alone
+        - Yes — it changes or extends a stable surface
+        - Not sure
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched the open and closed issues for this proposal.
+          required: true

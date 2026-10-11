@@ -121,13 +121,19 @@ Browser tests run headless only. `bun run install-browsers` installs the Playwri
 
 ## Contributing
 
-Pull requests are welcome. Before you open one:
+Pull requests are welcome; [CONTRIBUTING.md](CONTRIBUTING.md) is the entry point
+for a bug report, a feature request, a documentation problem, and a change to
+the code. Before you open a pull request:
 
 - Run `bun run lint && bun run typecheck && bun run test:all`.
 - Update the package README and the documentation site when you change a public API.
 - Add a changeset (`bun run changeset`) in the same pull request when the change affects what a user of the package sees.
 - Record a design change as an ADR in `.backlog/docs/adr/` before you implement it.
 - Write commit messages in Conventional Commits form.
+
+Report problems through the [issue forms](https://github.com/Archont561/bun-test-utils/issues/new/choose),
+and note that participation in this project means following the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 The working agreements are in [`.backlog/docs/workflow.md`](.backlog/docs/workflow.md).
 

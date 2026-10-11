@@ -11,10 +11,8 @@ const { title } = Astro.locals.starlightRoute.entry.data;
 const base = import.meta.env.BASE_URL;
 const repository = "https://github.com/Archont561/bun-test-utils";
 
-const issueUrl = `${repository}/issues/new?title=${encodeURIComponent(
+const issueUrl = `${repository}/issues/new?template=docs.yml&title=${encodeURIComponent(
   `Docs: ${title}`,
-)}&body=${encodeURIComponent(
-  `Page: ${Astro.url.href}\n\nWhat is wrong or missing?\n\n`,
 )}`;
 ---
 

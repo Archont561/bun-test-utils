@@ -1,0 +1,47 @@
+name: Documentation report
+description: A page in the documentation is wrong, missing, or unclear
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every page has a **Report a docs issue** link in its footer that opens this
+        form with the page title already filled in. If you arrived another way,
+        paste the page URL below — a report is much easier to act on when the page
+        is known.
+  - type: input
+    id: page-url
+    attributes:
+      label: Page
+      description: The full URL of the page.
+      placeholder: https://archont561.github.io/bun-test-utils/recipes/troubleshooting/
+    validations:
+      required: true
+  - type: textarea
+    id: what-is-wrong
+    attributes:
+      label: What is wrong or missing
+      description: |
+        The exact sentence, table row, or sample you mean, and what is wrong with
+        it — a claim that contradicts the package, a step that does not work, a
+        gap in the page, or prose that is unclear.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: |
+        If a sample behaved differently for you: the Bun version, the package
+        version, and the output you saw. Optional.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched the open and closed issues for this page.
+          required: true

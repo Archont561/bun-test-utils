@@ -14,7 +14,7 @@ The documentation site for `bun-test-utils`, built with [Astro](https://astro.bu
 | `src/content/docs/recipes/` | Task-oriented pages: database, servers, determinism, CI, troubleshooting. |
 | `src/content/docs/reference/` | The dense API pages: core, built-in fixtures, property/scenario/snapshot, HTTP/cassette/browser, CLI and errors. |
 | `src/content/docs/project/` | Release notes (including the old-to-new reference map) and contributing. |
-| `src/components/` | `Head.astro` (wide reference layout), `Footer.astro` (version, release notes, report-an-issue). |
+| `src/components/` | `Head.astro` (wide reference layout), `Footer.astro` (version, release notes, report-an-issue link into the docs issue form). |
 | `src/remark/` | `status-badges.mjs` (frontmatter → badge row), `sample-labels.mjs` (fence meta → sample label). |
 | `src/content.config.ts` | Starlight's schema plus `status`, `since`, `requires`, `platforms`. |
 | `tests/` | `first-test-snippet.test.ts`: the snippet and metadata check described below. |

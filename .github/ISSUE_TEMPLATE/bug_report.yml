@@ -1,0 +1,114 @@
+name: Bug report
+description: Something in the package does not behave as documented
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The package is documented at
+        <https://archont561.github.io/bun-test-utils/>, and
+        [Troubleshooting](https://archont561.github.io/bun-test-utils/recipes/troubleshooting/)
+        covers the failures that turn out to be configuration.
+
+        A minimal reproduction — one file, one command — is what turns a report
+        into a fix.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you ran, and what it printed.
+      placeholder: |
+        bun test → error: ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+      description: What the documentation promises for this case, or what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The smallest test file that shows the problem, the command you ran, and
+        the fixture composition involved. A repository or gist link is fine if it
+        is longer than a screen.
+      placeholder: |
+        // tests/repro.test.ts
+        import { test } from "./test";
+
+        test("repro", ({ tmpdir }) => {
+          // ...
+        });
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: debug-output
+    attributes:
+      label: Diagnostics
+      description: |
+        If the failure involves fixtures, teardown, cassettes, or snapshots, re-run
+        with `BUN_TEST_UTILS_DEBUG=1 bun test <file>` and paste the stderr here. It
+        prints session-teardown failures and cassette refresh warnings; it is not a
+        general verbose log. Leave this empty when it prints nothing.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      description: From the page footer, or `npm view @archont561/bun-test-utils version`.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: bun-version
+    attributes:
+      label: Bun version
+      description: The output of `bun --version`.
+      placeholder: "1.4.2"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: The OS and its version, and say so if the failure only happens in a container or in CI.
+      placeholder: macOS 15.6 / Ubuntu 24.04 / Windows 11 (WSL2)
+    validations:
+      required: true
+  - type: dropdown
+    id: capability
+    attributes:
+      label: Capability
+      description: Which part of the package fails? A guess is enough — pick "Not sure" if the failure is elsewhere.
+      options:
+        - Fixtures and scopes
+        - Standard fixtures (tmpdir, env, stdio, clock, seed, networkGuard)
+        - Snapshot testing
+        - Property-based or parameterized tests
+        - HTTP mocking or test servers
+        - Cassettes
+        - DOM testing
+        - Browser testing
+        - BDD scenarios
+        - CLI (test-utils init and diagnostics)
+        - Not sure
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched the open and closed issues for this.
+          required: true
+        - label: I read the troubleshooting page and the page that documents the behaviour.
+          required: true

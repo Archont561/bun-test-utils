@@ -90,9 +90,9 @@ release.
 
 :::caution[Experimental]
 Browser support may change without a major version bump. Report failures with
-the [docs issue link](https://github.com/Archont561/bun-test-utils/issues/new)
-or the page footer link, including `bun --version`, the OS, and the output of
-`bunx playwright --version`.
+the [bug report form](https://github.com/Archont561/bun-test-utils/issues/new?template=bug_report.yml),
+including `bun --version`, the OS, and the output of `bunx playwright --version`.
+Documentation problems go through the page footer link instead.
 :::
 
 ## One test, both backends

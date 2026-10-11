@@ -87,6 +87,6 @@ launch failure carries `FIXTURE_SETUP_FAILED` with the original error as
 2. Check the error's `code` in the [error-code list](/bun-test-utils/reference/cli/#error-codes).
 3. Reduce the file to one test and one fixture. If the failure survives that, it
    is a bug worth reporting.
-4. [Open an issue](https://github.com/Archont561/bun-test-utils/issues/new)
+4. [Open a bug report](https://github.com/Archont561/bun-test-utils/issues/new?template=bug_report.yml)
    with `bun --version`, the OS, the code, and the full output. The page footer
    has a pre-filled link for documentation problems.
