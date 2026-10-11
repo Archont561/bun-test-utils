@@ -196,7 +196,7 @@ Add `bun test` if the sandbox can run it; otherwise state in the PR that the sui
 
 ## Outcome
 
-Implemented in the same 2026-10-11 session, from `arena/6f663a78-bun-test-utils`.
+Implemented in the same 2026-10-11 session, from `arena/6f663a78-bun-test-utils`, in [PR #63](https://github.com/Archont561/bun-test-utils/pull/63).
 
 What the maintainer decided when asked:
 
