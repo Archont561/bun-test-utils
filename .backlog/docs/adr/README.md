@@ -45,5 +45,6 @@ Short, immutable records of *why*. Supersede rather than rewrite.
 | [0039](./0039-cassette-get-or-record-wrapper.md) | Callable cassette get-or-record wrapper with visible local refreshes | accepted; amends 0036 decision 4 for local callable callback misses only |
 | [0040](./0040-global-callback-serializers.md) | Process-wide callback serializer registration for cassette preloads | accepted; amends 0034 points 3 and 5 |
 | [0041](./0041-callable-snapshot-wrapper.md) | Callable snapshot wrapper with explicit names | accepted |
+| [0042](./0042-release-versions-from-pending-changesets.md) | Release versions are cut from pending changesets | accepted |
 
 Start from [`TEMPLATE.md`](./TEMPLATE.md).
