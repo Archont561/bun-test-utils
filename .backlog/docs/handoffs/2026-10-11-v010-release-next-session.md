@@ -33,8 +33,8 @@ ADR 0029 deferred a required reviewer; the maintainer chose to leave it open).
 
 ## What is in the open PR
 
-Session-branch PR to `main` (number is in the PR body; left open for maintainer review —
-do not merge unless asked):
+Session-branch PR to `main`: [#64](https://github.com/Archont561/bun-test-utils/pull/64), left open
+for maintainer review — do not merge unless asked:
 
 1. **ADR 0042** (accepted; maintainer decision 2026-10-11): release versions are cut
    from pending changesets. `auto-release.yml` now runs `bun run release:version`
