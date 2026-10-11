@@ -171,9 +171,19 @@ tasks:
       installed-consumer harness — including the task_057 serializer flow —
       against the registry package. No tag exists yet (git tag -l is empty).
       Tagging and publishing require maintainer sanction because they create
-      public artifacts."
+      public artifacts. DONE 2026-10-11: v0.1.0 is tagged on main (ce8082f, cut
+      by auto-release run 38156522468) and published as
+      @archont561/bun-test-utils@0.1.0 to npm (latest = 0.1.0, with the SLSA
+      provenance v1 attestation and the npm publish attestation) and to GitHub
+      Packages, with the tarball attached to GitHub Release v0.1.0 (release run
+      38156601658). The installed-consumer harness was rerun against the
+      registry package in a scratch project: registry install, bunx test-utils
+      init --yes writing the built preload path, a passing standard-fixture
+      test, and the task_057 snapshot-serializer flow (record, match,
+      tamper-detect). All three remaining M5 items are ticked with evidence in
+      .backlog/docs/milestones/M5-publish.md."
     source_links: []
-    status: in_progress
+    status: done
     priority: P3
     labels:
       - milestone
@@ -211,7 +221,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-10-05T15:18:09.031Z
-    updated_at: 2026-10-09T21:44:19.615Z
+    updated_at: 2026-10-11T17:13:25.117Z
   - id: task_006
     title: Behavioural (Gherkin) test suite
     description: "User-level BDD suite running each scenario against a real scratch
@@ -3855,8 +3865,25 @@ tasks:
       Related: task_005 (M5) stays in_progress until npm carries 0.1.0, the tag
 
       exists again, and the installed-consumer harness is rerun.
+
+      RESOLVED 2026-10-11. The same step succeeded in release run 38156601658
+      (job "Publish to npm", step "Publish with npm Trusted Publishing", green)
+      without any workflow change, so the trusted publisher registration on
+      npmjs.org was fixed after 2026-10-08. Whichever side the mismatch
+      hypothesis blamed (publisher registered with environment none vs
+      release.yml declaring environment npm), the pair now matches: the OIDC
+      publish works and npm carries 0.1.0 with its provenance attestation. The
+      2026-10-08 run 37860324252 is history: its tag was deleted, and its GitHub
+      Packages version was cleaned up — the 2026-10-11 publish of 0.1.0 to
+      GitHub Packages succeeded, which a leftover duplicate would have refused.
+
+      STILL OPEN, tracked as its own follow-up: the gating decision. The npm
+      environment still declares protection_rules: [], so nothing human-approves
+      a publish (ADR 0029 deferred a required reviewer). ADR 0042 changed the
+      trigger since — the approval is now the auto-release dispatch, not a
+      maintainer tag push. The decision stays with the maintainer.
     source_links: []
-    status: ready
+    status: done
     priority: P1
     labels:
       - ci
@@ -3894,7 +3921,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-10-08T21:22:10.539Z
-    updated_at: 2026-10-09T08:32:40.714Z
+    updated_at: 2026-10-11T17:13:25.642Z
   - id: task_067
     title: cassette.record keys callbacks by source text, so closures from one
       factory share a registry entry
@@ -5138,8 +5165,20 @@ tasks:
       with dry-run=false, then close task_066 and task_005 from the registry
       (npm view dist-tags.latest, installed-consumer harness against the
       registry package).
+
+      BOTH GAPS CONFIRMED FIXED 2026-10-11 by auto-release run 38156522468 and
+      release run 38156601658. (1) The version step no longer runs npm version:
+      "Validate and set requested version" used npm pkg set and succeeded. (2)
+      The publish packed with bun pm pack — the verify job's "Create and inspect
+      package tarball" and the publish job's "Create release tarball" (with the
+      workspace: guard) both passed, and the published manifest has no
+      workspace: specifiers (checked against the registry tarball). Note: ADR
+      0042 (2026-10-11) replaces the npm pkg set step with a changeset-driven
+      cut (bun run release:version); that path was verified locally to handle
+      the workspace: specs and to touch only the manifest and the consumed
+      changeset files.
     source_links: []
-    status: in_progress
+    status: done
     priority: P1
     labels: []
     repo_targets:
@@ -5169,7 +5208,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-10-10T16:54:07.570Z
-    updated_at: 2026-10-10T17:00:54.513Z
+    updated_at: 2026-10-11T17:13:26.171Z
   - id: task_095
     title: Fix cassette record() not replacing stale callback entries (ADR 0035 D2.1)
     description: "Reproduced on branch arena/fe882aeb-bun-test-utils: after a
@@ -5703,3 +5742,46 @@ tasks:
       push_comments: false
     created_at: 2026-10-11T16:14:02.348Z
     updated_at: 2026-10-11T16:18:31.701Z
+  - id: task_107
+    title: Decide whether the npm environment needs required reviewers (gating
+      decision)
+    description: "Follow-up from task_066's gating half, left explicitly open on
+      2026-10-11 with the maintainer. The npm environment
+      (repos/Archont561/bun-test-utils/environments/npm) declares
+      protection_rules: [], so nothing human-approves a publish: Trusted
+      Publishing OIDC plus provenance is the only control. ADR 0029 deferred a
+      required reviewer, noting the trusted publisher must keep naming the same
+      environment either way. Since ADR 0042 the trigger is the auto-release
+      dispatch itself (the version input and the maintainer tag push no longer
+      play the approval role). Decide one of two things and record it: add
+      required reviewers to the npm environment (maintainer settings change;
+      keep the environment name npm), or accept OIDC + provenance as the gate
+      and say so where task_066's trail points."
+    source_links: []
+    status: ready
+    priority: P2
+    labels:
+      - release
+      - ci
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria: []
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T17:13:34.190Z
+    updated_at: 2026-10-11T17:13:34.190Z

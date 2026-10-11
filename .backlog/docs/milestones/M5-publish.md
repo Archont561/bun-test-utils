@@ -1,6 +1,6 @@
 # M5 — Publish to npm
 
-- **Status:** 🟡 in progress
+- **Status:** ✅ done
 - **Specs:** [0005](../specs/0005-packaging-and-release.md)
 - **Backlog task:** `task_005`
 
@@ -24,9 +24,20 @@ package is published; private workspaces are assembled into Bunup-built ESM and 
 - [x] Release stability tiers, flat fixture-key precedence, contractual error messages,
       and Linux/macOS support are defined (`task_041`, ADR 0018).
 - [x] Pre-release documentation and README audit is complete (`task_089`).
-- [ ] `v0.1.0` git tag.
-- [ ] Publish `@archont561/bun-test-utils@0.1.0` (or configure trusted publishing).
-- [ ] Re-run the installed-consumer harness against the registry package.
+- [x] `v0.1.0` git tag — cut on `main` (`ce8082f`) by [auto-release run 38156522468](https://github.com/Archont561/bun-test-utils/actions/runs/38156522468) on 2026-10-11.
+- [x] Publish `@archont561/bun-test-utils@0.1.0` (or configure trusted publishing) — [release run 38156601658](https://github.com/Archont561/bun-test-utils/actions/runs/38156601658) published to npm with provenance and to GitHub Packages, and attached the tarball to the [GitHub Release](https://github.com/Archont561/bun-test-utils/releases/tag/v0.1.0).
+- [x] Re-run the installed-consumer harness against the registry package — 2026-10-11, scratch project: registry install, `bunx test-utils init --yes` (built preload path), a passing standard-fixture test, and the `task_057` snapshot-serializer flow (record, match, tamper-detect).
+
+## Release evidence (2026-10-11)
+
+| What | Where |
+|------|-------|
+| Version cut, tag, dispatch | [auto-release 38156522468](https://github.com/Archont561/bun-test-utils/actions/runs/38156522468) (workflow_dispatch, real run) |
+| Verify, both publishes, GitHub Release | [release 38156601658](https://github.com/Archont561/bun-test-utils/actions/runs/38156601658) (workflow_dispatch of `release.yml`) |
+| npm | `@archont561/bun-test-utils@0.1.0`, `latest = 0.1.0`, SLSA provenance v1 + npm publish attestation on the version |
+| GitHub Packages | [`bun-test-utils@0.1.0`](https://github.com/Archont561/bun-test-utils/pkgs/npm/bun-test-utils) |
+| GitHub Release | [v0.1.0](https://github.com/Archont561/bun-test-utils/releases/tag/v0.1.0) with `archont561-bun-test-utils-0.1.0.tgz` |
+| Registry consumer harness | scratch install from npm + `test-utils init` + fixture test + snapshot-serializer flow, all green 2026-10-11 |
 
 ## Exit criteria
 
