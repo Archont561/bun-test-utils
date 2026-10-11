@@ -8,7 +8,7 @@ and are consumed — and deleted — when versions are cut.
 
 ```bash
 bun run changeset          # describe a change; writes .changeset/<name>.md — commit it
-bun run release:version    # consume pending changesets: bump the version (changelog is disabled)
+bun run release:version    # consume the pending changesets now; auto-release runs this when a release is cut
 ```
 
 Publishing does not go through `changeset publish` (`bun run release:publish`); do not run it. A
@@ -42,9 +42,11 @@ inside it — changesets ignores them automatically, the same way it already ign
 | `fixed` / `linked` | empty | only one package versions, so there is nothing left to fix or link |
 | `commit` | `false` | lefthook runs commitlint, so commits stay hand-written and conventional |
 
-## Before the first release
+## First release and beyond
 
-The package is still at an unpublished `0.1.0`. Changesets bumps *from* the current
-version, so a changeset landed now would make the first-ever release `0.1.1` and skip
-`0.1.0` entirely. Cut `0.1.0` first (M5 / `task_005`), then start accumulating changesets
-for `0.1.1` and beyond.
+`v0.1.0` was cut on 2026-10-11 from the version already in the manifest, before the
+changeset-driven cut landed (ADR 0042). From now on `auto-release.yml` derives the
+release version from the pending changesets on `main` and consumes them as it cuts;
+a dispatch with no pending changesets has nothing to cut and stops. Accumulate a
+changeset in every pull request that changes what a consumer sees, and the next
+release cuts itself from them.
