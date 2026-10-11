@@ -1,7 +1,13 @@
 name: docs
 
-# Build the Astro + Starlight site and publish it to GitHub Pages.
-# One line per step: `bun run docs:build` builds the site.
+# Check, build, and publish the Astro + Starlight site.
+#
+# The `check` step runs the docs snippet and metadata test: it installs the
+# workspace package into a scratch project, runs the runnable samples the pages
+# show, and verifies that sidebar slugs, internal links and anchors, and page
+# frontmatter all resolve. It therefore runs on pull requests too — that is the
+# only place a modified page can be caught before it is published — while the
+# Pages deployment stays on pushes to `main`.
 
 on:
   push:
@@ -11,6 +17,16 @@ on:
       - ".backlog/docs/**"
       - "packages/**"
       - "package.json"
+      - "turbo.json"
+      - "bun.lock"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "apps/docs/**"
+      - ".backlog/docs/**"
+      - "packages/**"
+      - "package.json"
+      - "turbo.json"
       - "bun.lock"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
@@ -34,16 +50,24 @@ jobs:
         with:
           bun-version: 1.4.2 # keep in sync with `packageManager` in package.json
       - run: bun install --frozen-lockfile
+      # `turbo run test --filter=docs` builds @archont561/bun-test-utils first
+      # (see the `docs#test` task in turbo.json), because the samples import the
+      # built package rather than the workspace sources.
+      - name: Check the docs snippets and metadata
+        run: bun run docs:test
       - run: bun run docs:build
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        if: github.event_name != 'pull_request'
         with:
           enablement: true
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name != 'pull_request'
         with:
           path: apps/docs/dist
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

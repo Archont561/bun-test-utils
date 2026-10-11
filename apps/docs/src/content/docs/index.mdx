@@ -1,126 +1,148 @@
 ---
 title: bun-test-utils
-description: A general-purpose test extension for the Bun test runner. Playwright-style typed fixtures with scopes and LIFO teardown, plus BDD, property-based, snapshot, HTTP record/replay, and browser testing.
+description: A general-purpose test extension for the Bun test runner. Playwright-style typed fixtures with scopes and LIFO teardown, plus standard, DOM, browser, HTTP, cassette, snapshot, property-based, and BDD testing.
 template: splash
 hero:
-  tagline: Playwright-style typed fixtures for bun test, composed with test.extend(), with scopes and LIFO teardown. Plus BDD, property-based, snapshot, HTTP record/replay, and browser testing.
+  tagline: Playwright-style typed fixtures for `bun test`, composed with `test.extend()` — with scopes and LIFO teardown, plus first-class DOM, browser, HTTP, cassette, snapshot, property-based, and BDD testing.
   image:
     file: ../../assets/logo-light.svg
   actions:
-    - text: Get Started
-      link: /bun-test-utils/quickstart/
+    - text: Install and run a test
+      link: /bun-test-utils/start/first-test/
       icon: right-arrow
       variant: primary
-    - text: View on GitHub
-      link: https://github.com/Archont561/bun-test-utils
-      icon: external
+    - text: Browse capabilities
+      link: /bun-test-utils/capabilities/
+      icon: open-book
       variant: minimal
 ---
 
-## What it is
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+import { version } from "../../../../../packages/bun-test-utils/package.json";
 
-`bun-test-utils` is a general-purpose test extension for [`bun test`](https://bun.sh/docs/test/overview). It covers unit, integration, and end-to-end tests on the runner you already use, and it does not replace `bun:test`.
+`bun-test-utils` extends [`bun test`](https://bun.sh/docs/test/overview) with a
+typed fixture model: a fixture is a value built by a `setup` function, tests ask
+for the fixtures they need by destructuring, and the engine builds dependencies
+first and tears everything down in reverse order, even when a test fails.
 
-Its core is a fixture model in the style of Playwright Test. A fixture is a typed value built by a `setup` function. Tests ask for the fixtures they need by destructuring them, and the engine builds dependencies first, injects the values, and tears everything down in reverse order, even when a test fails.
+It is **not** a replacement for `bun:test` — it ships no runner of its own, and
+your tests stay `bun test` files. It is not a browser-only framework either:
+fixtures, standard fixtures, HTTP mocking, and cassettes work in any Bun project,
+and the DOM, browser, property-based, and BDD layers install with their own
+optional peers when you reach for them.
 
-```ts
-// test.ts
-import { test as base } from "@archont561/bun-test-utils";
+## Choose your path
 
-export const test = base.extend({
-  db: { scope: "file", setup: async (use) => { await use(await createDb()); } },
-  user: { setup: async (use, { db }) => { await use(await db.insertUser("ada")); } },
-});
-```
+<CardGrid stagger>
+  <LinkCard
+    title="Write your first test"
+    href="/bun-test-utils/start/first-test/"
+    description="An empty directory to a green `bun test` in five commands, with every file shown in full."
+  />
+  <LinkCard
+    title="Pick a capability"
+    href="/bun-test-utils/capabilities/"
+    description="What ships, whether it is stable or experimental, and what each capability requires."
+  />
+  <LinkCard
+    title="Copy a recipe"
+    href="/bun-test-utils/recipes/database/"
+    description="Database fixtures, test servers, deterministic runs, CI-safe cassettes, browsers in CI."
+  />
+  <LinkCard
+    title="Look up an API"
+    href="/bun-test-utils/reference/core/"
+    description="Every export, fixture member, option, environment variable, and error code."
+  />
+</CardGrid>
 
-```ts
-// user.test.ts
-import { expect } from "@archont561/bun-test-utils";
-import { test } from "./test";
-
-test("creates and verifies a user", async ({ db, user }) => {
-  expect(await db.find(user.id)).toMatchObject({ name: "ada" });
-});
-```
-
-`db` and `user` are built in dependency order, injected into the test, and torn down in LIFO order. Fixtures are available only through the imported `test.extend()` chain, so the test file is the complete list of what it depends on.
-
-* * *
-
-## What it covers
+## The core is always available
 
 <div class="feature-grid">
   <div class="feature-card">
     <h3>🧩 Typed fixtures</h3>
-    <p>Compose fixtures with <code>test.extend()</code>. Each fixture's type flows into the test that requests it, and a later definition overrides an earlier one.</p>
+    <p>Compose fixtures with <code>test.extend()</code>; each type flows into the test that requests it. <a href="/bun-test-utils/fundamentals/fixture-model/">The fixture model</a></p>
   </div>
 
   <div class="feature-card">
-    <h3>⏱️ Scopes</h3>
-    <p>Declare fixtures at <code>session</code>, <code>file</code>, or <code>test</code> scope. Long-lived resources are shared; short-lived ones are rebuilt per test.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>🔄 LIFO teardown</h3>
-    <p>Setup and teardown live in one function. Code after <code>await use(value)</code> runs in strict reverse order, including when the test fails.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>🧪 BDD scenarios</h3>
-    <p>Write fluent <code>given</code> / <code>when</code> / <code>then</code> tests on <code>test.scenario</code>. Scenario state and fixtures share one context.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>🎲 Property-based testing</h3>
-    <p>Run properties over generated values with <code>test.prop</code> and fast-check. Each generated sample gets fresh test-scoped fixtures.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>📸 Snapshot testing</h3>
-    <p>Run and assert callback results with <code>snapshot(fn, name)</code>, or compare values and files directly. Custom serializers and readable diffs keep baselines reviewable.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>📼 HTTP record/replay</h3>
-    <p>Use callable <code>cassette(fn)</code> to get or record callback results, record HTTP traffic deterministically, and register reusable serializers from a preload. Use <code>httpMock</code> for handlers.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>🌐 DOM and browser</h3>
-    <p>Test against happy-dom or a real headless Chromium through Playwright. The <code>webPage</code> fixture selects the backend with one environment variable.</p>
+    <h3>⏱️ Scopes and LIFO teardown</h3>
+    <p>Declare a fixture at <code>session</code>, <code>file</code>, or <code>test</code> scope. Setup and teardown live in one function. <a href="/bun-test-utils/fundamentals/scopes-and-teardown/">Scopes and teardown</a></p>
   </div>
 
   <div class="feature-card">
     <h3>📦 Standard fixtures</h3>
-    <p><code>tmpdir</code>, <code>env</code>, <code>stdio</code>, <code>clock</code>, <code>seed</code>, and <code>networkGuard</code> give every test isolated, deterministic state.</p>
+    <p><code>tmpdir</code>, <code>env</code>, <code>stdio</code>, <code>clock</code>, <code>seed</code>, and <code>networkGuard</code> give every test isolated, deterministic state. <a href="/bun-test-utils/reference/fixtures/">Built-in fixture API</a></p>
+  </div>
+
+  <div class="feature-card">
+    <h3>🌐 HTTP mocking and test servers</h3>
+    <p>Route <code>fetch</code> with MSW-style handlers, or serve real requests from an ephemeral <code>testServer</code>. <a href="/bun-test-utils/capabilities/http-and-servers/">HTTP and servers</a></p>
   </div>
 </div>
 
-* * *
+## Add-on capabilities
 
-## Stability
+Each one installs its own optional peer and is requested like any other
+fixture; nothing is pulled in until a test asks for it.
 
-The fixture engine and the standard, DOM, snapshot, property-testing, and minimal cassette capabilities are stable and follow semantic versioning. Browser and BDD scenarios are experimental and may change in minor versions. Linux and macOS are supported; Windows support is planned. The [API reference](/bun-test-utils/reference/api/#stability-and-platforms) lists the compatibility boundaries.
+| Capability | Use it for | Maturity | Requires |
+| :-- | :-- | :-- | :-- |
+| [DOM testing](/bun-test-utils/capabilities/dom-and-browser/) | Component and markup assertions in-process, without a browser | Stable | `happy-dom` |
+| [Browser testing](/bun-test-utils/capabilities/dom-and-browser/) | Real layout, focus, and input in headless Chromium | Experimental | `playwright` + Chromium |
+| [Snapshot testing](/bun-test-utils/capabilities/snapshots/) | Reviewed baselines for values, files, and callback results | Stable | — |
+| [Property-based testing](/bun-test-utils/capabilities/property-based-testing/) | Generated inputs that shrink to a counterexample | Stable | `fast-check` |
+| [BDD scenarios](/bun-test-utils/capabilities/scenarios/) | Fluent `given` / `when` / `then` chains on the same fixtures | Experimental | `@aboviq/bun-test-cucumber` |
+| [HTTP cassettes](/bun-test-utils/capabilities/cassettes/) | Recorded request/response pairs that replay deterministically | Stable | — |
 
-* * *
+The [capability index](/bun-test-utils/capabilities/) has the full decision
+table, the parameterized-test alternative to property tests, and links into
+every guide.
 
-## Quick setup
+## Quick start
 
-```bash
+Install the package and wire its preload once per project:
+
+```bash runnable
 bun add -d @archont561/bun-test-utils
-bunx test-utils init
+bunx test-utils init --yes
 ```
 
-`init` adds the package's preload to `bunfig.toml`. Then create a `test.ts` module, compose your fixtures there, and import it from your tests. The [quickstart](/bun-test-utils/quickstart/) walks through the whole flow.
+`init` adds the package's preload to `bunfig.toml`; it installs run-wide
+teardown hooks and loads no fixtures of its own. Built-in fixtures are then
+available to any test that requests them:
 
-* * *
+```ts title="greeting.test.ts" runnable
+import { expect, test } from "@archont561/bun-test-utils";
 
-## Next steps
+test("greets through a built-in fixture", async ({ tmpdir }) => {
+  tmpdir.write("greeting.txt", "hello");
+  expect(tmpdir.read("greeting.txt")).toBe("hello");
+});
+```
 
-- [Quickstart](/bun-test-utils/quickstart/): install, compose a fixture, and run a test in about five minutes.
-- [Getting started](/bun-test-utils/guides/getting-started/): how fixtures, scopes, and teardown fit together.
-- [Scopes and teardown](/bun-test-utils/guides/scopes-and-teardown/): session, file, and test lifetimes.
-- [Built-in fixtures](/bun-test-utils/reference/plugins/): the standard, DOM, browser, server, cassette, and snapshot fixtures.
-- [Snapshot testing](/bun-test-utils/guides/snapshot-testing/): callable snapshot assertions, direct value/file matching, serializers, and modes.
-- [Recording HTTP cassettes](/bun-test-utils/guides/recording-http-cassettes/): callback replay, HTTP recordings, and preload serializers.
-- [API reference](/bun-test-utils/reference/api/): every export, option, and environment variable.
+```bash runnable
+bun test
+```
+
+Expected output:
+
+```text
+ 1 pass
+ 0 fail
+ 1 expect() calls
+```
+
+[Install and first passing test](/bun-test-utils/start/first-test/) shows the
+same flow with a fixture of your own, complete `tsconfig` output, and the
+failure modes.
+
+These docs describe **bun-test-utils v{version}**
+([release notes](/bun-test-utils/project/releases/)) and the capability tiers
+above are the same ones in
+[Stability, compatibility, and support](/bun-test-utils/overview/compatibility/):
+stable surfaces follow semantic versioning, experimental ones may change in a
+minor release.
+
+Documentation wrong or missing something?
+[Report a docs issue](https://github.com/Archont561/bun-test-utils/issues/new?title=Docs%3A%20homepage&body=Page%3A%20https%3A%2F%2Farchont561.github.io%2Fbun-test-utils%2F%0A%0AWhat%20is%20wrong%20or%20missing%3F%0A%0A)
+or read [Contributing and docs feedback](/bun-test-utils/project/contributing/).
