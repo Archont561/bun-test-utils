@@ -1,19 +1,18 @@
 name: auto-release
 
-# Prepare and tag a release on demand. The tag is handed explicitly to
-# release.yml because pushes made with GITHUB_TOKEN do not start another
+# Prepare and tag a release on demand. The release version is cut from the
+# changesets accumulated on main (ADR 0042): the cut step consumes them with
+# `bun run release:version`, and the chore(release) commit carries both the
+# manifest bump and the consumed changeset files. The tag is handed explicitly
+# to release.yml because pushes made with GITHUB_TOKEN do not start another
 # workflow. npm publication remains isolated in release.yml and uses Trusted
 # Publishing there.
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: Release version without the v prefix (for example 0.1.0)
-        required: true
-        type: string
       dry-run:
-        description: Validate the version without committing or publishing
+        description: Cut the version on the runner without committing or publishing
         required: false
         default: false
         type: boolean
@@ -49,19 +48,33 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Validate and set requested version
-        env:
-          VERSION: ${{ inputs.version }}
-        working-directory: packages/bun-test-utils
+      # The version comes from the pending changesets, not from a dispatch input
+      # (ADR 0042). `changeset version` bumps the manifest and deletes the
+      # consumed changeset files; a run with no pending changesets has nothing
+      # to cut and fails here, before the release gates.
+      - name: Cut version from pending changesets
         run: |
+          shopt -s nullglob
+          pending=()
+          for file in .changeset/*.md; do
+            [ -f "$file" ] || continue
+            [ "$(basename "$file")" = "README.md" ] && continue
+            pending+=("$file")
+          done
+          if [ ${#pending[@]} -eq 0 ]; then
+            echo "::error::no pending changesets on main; a release consumes the changesets accumulated since the last one (ADR 0042)"
+            exit 1
+          fi
+          echo "Consuming ${#pending[@]} changeset(s):"
+          printf '  %s\n' "${pending[@]}"
+          bun run release:version
+          VERSION=$(bun -e 'console.log(require("./packages/bun-test-utils/package.json").version)')
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
-            echo "Version must be strict semver without a leading v: $VERSION"
+            echo "::error::changesets produced a version that is not strict semver: $VERSION"
             exit 1
           }
-          # `npm pkg set` rewrites only the version. `npm version` loads the
-          # workspace tree from the root package.json and fails on the
-          # workspace: specifiers in devDependencies (task_090).
-          npm pkg set version="$VERSION"
+          echo "Cut version ${VERSION}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Restore Playwright browser cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
@@ -88,22 +101,21 @@ jobs:
           bun run build
 
       - name: Show release plan
-        env:
-          VERSION: ${{ inputs.version }}
         working-directory: packages/bun-test-utils
         run: |
           echo "Will tag main as v${VERSION} and dispatch release.yml for npm Trusted Publishing."
+          echo "The release commit will carry:"
+          git status --short
           bun pm pack --dry-run
 
       - name: Commit and tag release
         if: ${{ !inputs.dry-run }}
-        env:
-          VERSION: ${{ inputs.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet; then
-            git add packages/bun-test-utils/package.json
+            # The manifest bump and the consumed changeset files (ADR 0042).
+            git add packages/bun-test-utils/package.json .changeset
             git commit -m "chore(release): prepare v${VERSION}"
             git push origin main
           fi
@@ -116,5 +128,4 @@ jobs:
         if: ${{ !inputs.dry-run }}
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
         run: gh workflow run release.yml --ref main -f tag="v${VERSION}"
