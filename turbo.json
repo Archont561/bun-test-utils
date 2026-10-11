@@ -16,6 +16,10 @@
     "test": {
       "outputs": []
     },
+    "docs#test": {
+      "dependsOn": ["@archont561/bun-test-utils#build"],
+      "outputs": []
+    },
     "@archont561/bun-test-utils#test": {
       "dependsOn": ["build"],
       "outputs": []

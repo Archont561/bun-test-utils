@@ -61,3 +61,88 @@
   color: var(--sl-color-gray-3);
   line-height: 1.5;
 }
+
+/* Status rows rendered from frontmatter by src/remark/status-badges.mjs.
+   Text carries the meaning; colour is a secondary cue, and every pair is
+   checked for contrast in both themes. */
+.status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem 1.5rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.175rem 0.45rem;
+  border: 1px solid var(--status-border);
+  border-radius: 0.25rem;
+  background-color: var(--status-bg);
+  color: var(--status-text);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-sm);
+  line-height: normal;
+}
+
+.status-badge--stable,
+.status-badge--experimental {
+  font-weight: 600;
+}
+
+.status-badge--stable {
+  --status-border: var(--sl-color-green);
+  --status-bg: var(--sl-color-green-low);
+  --status-text: var(--sl-color-green-high);
+}
+
+.status-badge--experimental {
+  --status-border: var(--sl-color-orange);
+  --status-bg: var(--sl-color-orange-low);
+  --status-text: var(--sl-color-orange-high);
+}
+
+.status-badge--since,
+.status-badge--platforms {
+  --status-border: var(--sl-color-gray-4);
+  --status-bg: var(--sl-color-gray-6);
+  --status-text: var(--sl-color-gray-1);
+}
+
+.status-badge--requires {
+  --status-border: var(--sl-color-blue);
+  --status-bg: var(--sl-color-blue-low);
+  --status-text: var(--sl-color-blue-high);
+}
+
+/* Sample-kind labels rendered from fence meta by
+   src/remark/sample-labels.mjs. "Runnable" is enforced by
+   apps/docs/tests/first-test-snippet.test.ts. */
+.sample-label {
+  margin: 1rem 0 -0.5rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 3px solid var(--sl-color-gray-4);
+  color: var(--sl-color-gray-2);
+  font-size: var(--sl-text-sm);
+}
+
+.sample-label strong {
+  color: var(--sl-color-white);
+}
+
+.sample-label--runnable {
+  border-inline-start-color: var(--sl-color-green);
+}
+
+.sample-label--illustrative {
+  border-inline-start-color: var(--sl-color-blue);
+}
+
+.sample-label--partial {
+  border-inline-start-color: var(--sl-color-orange);
+}
+
+/* The homepage grid splits core fixtures from optional capabilities; the
+   heading carries the split, so the cards stay plain links. */
+.feature-card a {
+  font-weight: 600;
+}

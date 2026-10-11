@@ -5383,3 +5383,232 @@ tasks:
       push_comments: false
     created_at: 2026-10-10T18:08:24.778Z
     updated_at: 2026-10-10T18:32:56.154Z
+  - id: task_100
+    title: "Docs check: execute the browser-lane samples"
+    description: Deferred from the 2026-10-11 docs audit (deferred work item 1).
+      capabilities/dom-and-browser.md keeps its Chromium samples labelled
+      `illustrative` because .github/workflows/docs.yml installs no browsers, so
+      the docs snippet check (apps/docs/tests/first-test-snippet.test.ts) cannot
+      run them. Add the Playwright browser cache and install step to the docs
+      workflow, promote the samples to `runnable`, and let the check execute
+      them on the browser backend.
+    source_links: []
+    status: ready
+    priority: P3
+    labels:
+      - docs
+      - testing
+      - ci
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - docs.yml installs Chromium with a cached ~/.cache/ms-playwright keyed by
+        bun.lock
+      - The browser samples in capabilities/dom-and-browser.md are labelled
+        runnable again
+      - the docs check executes them with BUN_TEST_UTILS_WEB_ENV=browser and
+        fails on regression
+      - The added runtime is documented in apps/docs/README.md
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T15:49:47.185Z
+    updated_at: 2026-10-11T15:49:47.185Z
+  - id: task_101
+    title: "Docs check: execute the snapshot and cassette samples"
+    description: "Deferred from the 2026-10-11 docs audit (deferred work item 2).
+      capabilities/snapshots.md, capabilities/cassettes.md, and
+      recipes/ci-safe-cassettes.md use `partial` fences for workflow commands
+      (`bunx test-utils cache clear`, `SNAPSHOT_MODE=update bun test`, `git
+      diff`) and inline partial TypeScript, because the docs check has no
+      scratch project that records and replays. Build one: a scratch project
+      that writes a fixture, runs the update mode, asserts the reviewed
+      baseline, then replays from the committed file — and move the fences it
+      can perform back to `runnable`."
+    source_links: []
+    status: ready
+    priority: P3
+    labels:
+      - docs
+      - testing
+      - vcr
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - A scratch project in the docs check records a snapshot and a cassette,
+        then replays both without network access
+      - cache-clear and mode-switch commands that the check can perform are
+        labelled runnable
+      - The replay run asserts the recorded baseline is what CI would read
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T15:49:51.367Z
+    updated_at: 2026-10-11T15:49:51.367Z
+  - id: task_102
+    title: "Docs: add a documentation issue form"
+    description: "Deferred from the 2026-10-11 docs audit (deferred work item 4).
+      The page footer prefills a plain
+      https://github.com/Archont561/bun-test-utils/issues/new URL with the page
+      title and URL in the body; there is no issue template or label, so a docs
+      report arrives indistinguishable from a bug. Add
+      .github/ISSUE_TEMPLATE/docs.yml (issue form: page URL plus what is wrong
+      or missing) and point the footer at it, so reports are classified without
+      a maintainer relabelling them."
+    source_links: []
+    status: ready
+    priority: P3
+    labels:
+      - docs
+      - process
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - .github/ISSUE_TEMPLATE/docs.yml exists with a required page-URL field
+        and a description field
+      - src/components/Footer.astro links to the form
+        (issues/new?template=docs.yml) and still prefills the page title
+      - project/contributing.md documents the path a docs report takes
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T15:49:55.592Z
+    updated_at: 2026-10-11T15:49:55.592Z
+  - id: task_103
+    title: "Docs: derive the legacy anchor map instead of hand-maintaining it"
+    description: Deferred from the 2026-10-11 docs audit (deferred work item 5). A
+      static host cannot redirect a fragment, so every anchor the pre-split
+      /reference/api/ published is mapped by hand in project/releases.md, and
+      apps/docs/tests/first-test-snippet.test.ts checks that each mapping is
+      present. The list is duplicated in the test and in the page, and a future
+      split of the reference pages would repeat the exercise. Record the mapping
+      once in a machine-readable file, generate the table from it, and have the
+      check read that file.
+    source_links: []
+    status: ready
+    priority: P3
+    labels:
+      - docs
+      - tooling
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - The legacy anchor list exists in one place and the check reads it from
+        there
+      - The table in project/releases.md is generated from that source, or a
+        check fails when it drifts
+      - Adding a legacy alias for a future split needs no edit to the test
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T15:50:00.132Z
+    updated_at: 2026-10-11T15:50:00.132Z
+  - id: task_104
+    title: "Docs: P0+P1 restructure of apps/docs from the 2026-10-11 audit"
+    description: "Implement the P0 and P1 scope of the 2026-10-11 docs audit
+      (.backlog/docs/audits/2026-10-11-docs-site-refactor.md), benchmarked
+      against Playwright's documentation: a runnable install-and-first-test
+      page, the six-group sidebar (Start here, Fundamentals, Capabilities,
+      Recipes, Reference, Project), maturity and prerequisite badges from
+      frontmatter, a compatibility and a troubleshooting page, the
+      /reference/api/ split into five pages with every legacy anchor still live,
+      a DOM-and-browser guide, the first recipe set, a capability index with
+      prerequisite and maturity columns, release/upgrade notes, and a docs
+      snippet check that executes every runnable sample in a scratch project
+      against the built package and verifies sidebar, link, anchor, and
+      frontmatter integrity. The writing contract lives in apps/docs/README.md."
+    source_links: []
+    status: done
+    priority: P2
+    labels:
+      - docs
+      - testing
+      - refactor
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - "bun run docs:test green: runnable samples executed, sidebar and anchors
+        resolved, frontmatter valid"
+      - bun run docs:build green with redirects for /quickstart/, the nine
+        /guides/* paths, /reference/api/, and /reference/plugins/
+      - The 16 legacy /reference/api/ anchors resolve on their new pages and are
+        mapped in project/releases.md
+      - Browser and BDD are labelled experimental in the sidebar, on their
+        pages, and in the capability index
+      - apps/docs/README.md documents the layout, the sample-label contract, and
+        the check
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-10-11T15:50:20.698Z
+    updated_at: 2026-10-11T15:53:47.853Z

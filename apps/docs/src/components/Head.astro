@@ -1,0 +1,30 @@
+---
+import Default from "@astrojs/starlight/components/Head.astro";
+
+/**
+ * Reference pages carry wide member tables and code blocks. Everywhere else
+ * the 45rem measure keeps prose readable, so the wider container is opted in
+ * per section rather than applied site-wide (docs audit, 2026-10-11).
+ *
+ * `is:inline` keeps this rule out of the bundled stylesheet, so it is emitted
+ * after Starlight's own CSS and wins the cascade without `!important`.
+ * Below 90rem the viewport is too narrow for a 72rem column plus both
+ * sidebars, so the default measure stays.
+ */
+const { slug } = Astro.locals.starlightRoute.entry;
+// Directory index pages enter the route with their directory slug, so the
+// capability index is `capabilities`, not `capabilities/index`.
+const wide = slug.startsWith("reference/") || slug === "capabilities";
+---
+
+<Default />
+
+{
+  wide && (
+    <style is:inline>
+      {`@media (min-width: 90rem) {
+        :root { --sl-content-width: 72rem; }
+      }`}
+    </style>
+  )
+}
