@@ -12,11 +12,12 @@ single-page API reference went.
 ## Current version
 
 These docs describe **v0.1.0**, the version in
-`packages/bun-test-utils/package.json`. `0.1.0` is the first supported release
-of `@archont561/bun-test-utils`; npm carries only the `0.0.0` placeholders
-published while the package name was being reserved. The `v0.1.0` tag and its
-publication are the last step of the release milestone, so treat the published
-version as "whatever the page footer says" — it is rendered from the package
+`packages/bun-test-utils/package.json`. `0.1.0` is the first supported release of
+`@archont561/bun-test-utils`: it was tagged `v0.1.0` and published to npm and to
+GitHub Packages on 2026-10-11, with the packed tarball attached to the
+[GitHub Release](https://github.com/Archont561/bun-test-utils/releases/tag/v0.1.0).
+The `0.0.0` versions published earlier were name-reservation placeholders. The
+published version is "whatever the page footer says" — it is rendered from the package
 manifest at build time, not typed into a page.
 
 Everything on this site is written against that version. A page whose surface
@@ -49,8 +50,12 @@ The exact compatibility surfaces are in
 
 ## How a release is cut
 
-1. Changes land on `main` with a changeset describing the user-visible effect.
-2. `auto-release.yml` cuts a version bump from `main`.
+1. Changes land on `main` with a changeset describing the user-visible effect and
+   the bump level it needs.
+2. `auto-release.yml` consumes the pending changesets (`bun run release:version`)
+   to cut the version bump in a `chore(release): prepare v<version>` commit on
+   `main`, then tags it. A run with no pending changesets has nothing to cut and
+   stops before the release gates.
 3. A `v<version>` tag on a commit that is already on `main` is the release. The
    tag's version must equal the version in the package manifest, or the release
    workflow refuses it.
@@ -118,4 +123,4 @@ the `/guides/*` pages → their new homes under
 
 - [Stability, compatibility, and support](/bun-test-utils/overview/compatibility/): the tiers, the Bun range, and the peers.
 - [Contributing and docs feedback](/bun-test-utils/project/contributing/): changesets, ADRs, and how to report a problem in these docs.
-- [GitHub Releases](https://github.com/Archont561/bun-test-utils/releases): the published artifacts once the first tag is cut.
+- [GitHub Releases](https://github.com/Archont561/bun-test-utils/releases): the published artifacts and the generated release notes.
