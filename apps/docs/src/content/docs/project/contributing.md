@@ -11,16 +11,22 @@ when you want to change it yourself.
 
 Every page has a **Report a docs issue** link in its footer, and an
 **Edit page** link in the sidebar that opens the page's Markdown on GitHub. The
-report link prefills the page URL, so an issue needs only a sentence about what
-is wrong:
+report link opens the documentation report form with the page title already
+filled in, so a report needs the page URL and a sentence about what is wrong:
 
-- the page and the exact sentence, table row, or sample you mean,
+- the page URL — the form requires it,
+- the exact sentence, table row, or sample you mean,
 - what you expected instead,
 - the Bun version and package version if a sample behaved differently
   (`bun --version`, and the version in the page footer).
 
-[Open an issue](https://github.com/Archont561/bun-test-utils/issues/new?title=Docs%3A%20&body=Page%3A%20%0A%0AWhat%20is%20wrong%20or%20missing%3F%0A%0A)
-with the `documentation` label if you cannot tell which page it belongs to.
+[Open the documentation report form](https://github.com/Archont561/bun-test-utils/issues/new?template=docs.yml)
+directly if the footer link is not available to you; the form applies the
+`documentation` label, so a docs report is never mistaken for a bug report.
+
+What happens to a report: it arrives labelled `documentation` with the page
+named, and a maintainer either corrects the page or records the work in the
+project's backlog (`.backlog/`), where it stays visible until the page is fixed.
 
 ## The writing rules
 
@@ -114,8 +120,16 @@ rather than edited. The docs audit that produced the current structure of this
 site is in
 [`.backlog/docs/audits/`](https://github.com/Archont561/bun-test-utils/tree/main/.backlog/docs/audits).
 
+## Code of Conduct
+
+Contributing to this site — or to anything else in the project — means following
+the [Code of Conduct](https://github.com/Archont561/bun-test-utils/blob/main/CODE_OF_CONDUCT.md).
+Report a problem with someone's behaviour through the private route that file
+names, never in an issue thread.
+
 ## Related
 
+- [Contributing to the package](https://github.com/Archont561/bun-test-utils/blob/main/CONTRIBUTING.md): the entry point for changes that are not documentation.
 - [Release notes and upgrading](/bun-test-utils/project/releases/): versions, compatibility, and the old-to-new reference map.
 - [Stability, compatibility, and support](/bun-test-utils/overview/compatibility/): which surfaces are contractual.
 - [The fixture model](/bun-test-utils/fundamentals/fixture-model/): the model every guide is written against.

@@ -92,8 +92,8 @@ second maintained docs version exists, this policy changes with it.
 
 | Need | Where |
 | :-- | :-- |
-| A bug in the package, or behaviour that contradicts these docs | [Open an issue](https://github.com/Archont561/bun-test-utils/issues/new) |
-| A mistake or gap in a documentation page | **Report a docs issue** in the page footer — it opens an issue with the page URL already filled in |
+| A bug in the package, or behaviour that contradicts these docs | [Open a bug report](https://github.com/Archont561/bun-test-utils/issues/new?template=bug_report.yml) |
+| A mistake or gap in a documentation page | **Report a docs issue** in the page footer — it opens the documentation report form with the page title already filled in |
 | A correction you can write yourself | **Edit this page** in the page footer beside the last-updated date |
 | Release history and breaking changes | [Release notes](/bun-test-utils/project/releases/) and the [GitHub releases](https://github.com/Archont561/bun-test-utils/releases) |
 

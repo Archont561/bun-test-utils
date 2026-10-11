@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://archont561.github.io/bun-test-utils/
+    about: Guides, recipes, the capability index, and the API reference
