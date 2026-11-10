@@ -55,6 +55,7 @@ Run `bun test`. The full guide is in the [quickstart](https://archont561.github.
 
 | Capability | What you get | Guide |
 | :-- | :-- | :-- |
+| Test selection | Bun's `test.skip` / `only` / `todo` / `failing` / `concurrent` / `serial` modifiers and their conditional forms, plus tag filtering through `BUN_TEST_UTILS_TAGS` | [Core runner API](https://archont561.github.io/bun-test-utils/reference/core/#test-modifiers) |
 | Fixtures | Typed fixtures composed with `test.extend()`, with `session`, `file`, and `test` scopes and LIFO teardown | [Scopes and teardown](https://archont561.github.io/bun-test-utils/guides/scopes-and-teardown/), [Explicit composition](https://archont561.github.io/bun-test-utils/guides/explicit-composition/) |
 | Standard fixtures | `tmpdir`, `env`, `stdio`, `clock`, `seed`, `networkGuard` | [Built-in fixtures](https://archont561.github.io/bun-test-utils/reference/plugins/) |
 | BDD scenarios | Fluent `given` / `when` / `then` tests on `test.scenario` (experimental) | [Scenarios and fluent API](https://archont561.github.io/bun-test-utils/guides/scenarios-and-fluent-api/) |

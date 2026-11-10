@@ -92,3 +92,25 @@ type _CallbackSerializerIsUsable = CallbackSerializer<Date>;
 import type { CallbackSerializer as RootCallbackSerializer } from "@archont561/bun-test-utils";
 
 type _RootCallbackSerializerMustBeUnavailable = RootCallbackSerializer;
+
+// Positive assertion: the public runner carries Bun's modifier surface
+// (ADR 0043), so a consumer never needs `bun:test`'s runner for skip/only/todo.
+type _ModifiersAreTyped = [
+  typeof import("@archont561/bun-test-utils").test.skip,
+  typeof import("@archont561/bun-test-utils").test.only,
+  typeof import("@archont561/bun-test-utils").test.skipIf,
+];
+
+// @ts-expect-error `test.each` is not part of the surface until a row/context
+// convention is decided (ADR 0043).
+type _EachIsAbsent = typeof import("@archont561/bun-test-utils").test.each;
+
+// Positive assertion: `tags` is accepted on the runner's options object
+// (ADR 0044), alongside the existing per-test options.
+type _TagsAreAccepted = Parameters<
+  typeof import("@archont561/bun-test-utils").test
+>[2];
+const _taggedOptions: _TagsAreAccepted = {
+  tags: ["fast", "filesystem"],
+  timeout: 1000,
+};

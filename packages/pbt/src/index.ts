@@ -5,6 +5,7 @@ import {
   callerFile,
   createTest,
   createTestWithFixtures,
+  delegateModifiers,
   describe,
   detectFixtures,
   executeScenarioSteps,
@@ -345,6 +346,11 @@ function makePbtTest(
     }) as PbtScenarioFactory,
     { prop: makeScenarioProp(map, prop, scenarioGuard) },
   );
+  // ADR 0043: modifiers delegate to the per-file core runner this layer
+  // already resolves, so they follow `callerFile` detection exactly like
+  // `test` does.
+  delegateModifiers(pbtTest, runner);
+
   Object.defineProperty(pbtTest, FIXTURE_MAP_SYMBOL, {
     value: map,
     enumerable: false,

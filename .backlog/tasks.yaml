@@ -5785,3 +5785,127 @@ tasks:
       push_comments: false
     created_at: 2026-10-11T17:13:34.190Z
     updated_at: 2026-10-11T17:13:34.190Z
+  - id: task_108
+    title: Expose Bun's test modifiers on the fixture-aware test (ADR 0043)
+    description: "GitHub issue #66. The fixture-aware test object only carried
+      extend, scenario, and prop, so skip/only/todo/failing/concurrent/serial
+      and their conditional forms were missing and a test that needed runtime
+      skipping had to abandon fixtures. Add the modifier surface to core,
+      delegate it through the bdd and pbt layers, defer fixture-graph resolution
+      for declarations Bun never runs, document it, and record ADR 0043."
+    source_links: []
+    status: ready
+    priority: P2
+    labels:
+      - test-runner
+      - api
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - test.skip/skipIf/only/todo/failing/concurrent/serial and the conditional
+        variants register fixture-aware tests
+      - Skipped and filtered declarations never resolve their fixtures; running
+        declarations keep eager validation
+      - The bdd and pbt layers delegate rather than reimplement the surface
+      - ADR 0043, spec 0004 R14, docs, changeset
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-11-10T14:14:48.319Z
+    updated_at: 2026-11-10T14:14:48.319Z
+  - id: task_109
+    title: Tag-based test selection through BUN_TEST_UTILS_TAGS (ADR 0044)
+    description: "GitHub issue #67. The suite had no semantic grouping: only
+      --test-name-pattern matched tests, and Bun 1.4.2 exposes no tag flag, so
+      filtering has to happen at declaration time. Add options.tags, a
+      BUN_TEST_UTILS_TAGS filter (include and !exclude), register non-matching
+      declarations through Bun's test.skip so they stay visible, and never
+      resolve their fixtures. Document it, and record ADR 0044."
+    source_links: []
+    status: ready
+    priority: P2
+    labels:
+      - test-runner
+      - api
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - test(name, fn, { tags }) is accepted and typed
+      - BUN_TEST_UTILS_TAGS supports inclusions, !exclusions, and their
+        combination with the documented semantics
+      - Filtered-out tests are reported as skipped and do not build fixtures
+      - ADR 0044, spec 0004 R15, docs, changeset
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-11-10T14:14:51.531Z
+    updated_at: 2026-11-10T14:14:51.531Z
+  - id: task_110
+    title: "Repair the mangled issue bodies and close #65 now that describe ships"
+    description: 'Issues #65, #66, and #67 were filed on 2026-10-21 with every
+      inline-code span and code block stripped, so titles lost their subject
+      ("Re-export  from bun:test alongside  and ") and the Requested API
+      sections are empty. Repair the three bodies from the code and the ADRs,
+      comment on #65 that describe has been re-exported since 0.1.0 before
+      closing it, and link the implementing pull requests on #66 and #67.'
+    source_links: []
+    status: ready
+    priority: P3
+    labels:
+      - triage
+      - github
+    repo_targets:
+      - bun-test-utils
+    acceptance_criteria:
+      - The three issue bodies are readable Markdown with their code spans and
+        requested APIs restored
+      - "#65 carries a comment naming the shipped surface (describe, expect,
+        test in 0.1.0) and is closed"
+      - "#66 and #67 carry a comment linking the implementation"
+    dependencies: []
+    planning:
+      split_status: pending
+      risk: medium
+    execution_defaults:
+      manual_approval_required: false
+      auto_commit: true
+      push_when_done: true
+      create_pr: false
+      merge_pr: false
+      worktree_mode: direct
+      preferred_agents: []
+      max_subagents: 5
+    sync:
+      source_of_truth: backlog
+      push_status: false
+      push_comments: false
+    created_at: 2026-11-10T14:14:52.679Z
+    updated_at: 2026-11-10T14:14:52.679Z

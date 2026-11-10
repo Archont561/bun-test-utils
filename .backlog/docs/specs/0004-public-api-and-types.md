@@ -23,6 +23,8 @@
 | R11 | The exact human-readable templates for unknown fixtures, circular dependencies, a fixture finishing without `use(value)`, and a fetch blocked by `networkGuard` MUST remain contractual; snapshot cycle and serializer-failure codes/details are governed by spec 0013. Other diagnostic wording MAY change while machine-readable codes and meaning remain compatible. |
 | R12 | `@archont561/bun-test-utils/pbt` MUST export `defineArbitraries`, accepting an arbitrary record or fast-check factory, contextually typing the factory API, preserving generated-value inference, and returning the supplied definition unchanged. |
 | R13 | `@archont561/bun-test-utils/bdd` MUST export `givenStep`, `whenStep`, and `thenStep` identity wrappers with contextual input/output-state typing, plus the related scenario type aliases; each wrapper returns its callback unchanged. |
+| R14 | The root `test` MUST expose Bun's registration modifiers — `only`, `skip`, `todo`, `failing`, `concurrent`, `serial`, and the conditional factories `if`, `skipIf`, `todoIf`, `failingIf`, `concurrentIf`, `serialIf` — with fixtures intact, and MUST NOT expose `test.each` until a row/context convention is decided ([ADR 0043](../adr/0043-fixture-aware-test-modifiers.md)). |
+| R15 | `test()` MUST accept `options.tags` and skip a declaration that does not pass the `BUN_TEST_UTILS_TAGS` filter, without resolving the test's fixtures ([ADR 0044](../adr/0044-tag-filtering-without-a-runner-flag.md)). |
 
 ## Design
 
@@ -44,7 +46,7 @@ The user first authorized `propTestSchema` as a top-level runtime identity wrapp
 
 ### Capability-scoped typed helpers (ADR 0022)
 
-`@archont561/bun-test-utils/pbt` exports `defineArbitraries` and the PBT type aliases `FastCheckApi`, `ArbitraryInput`, and `GeneratedValues`. `@archont561/bun-test-utils/bdd` exports the phase-specific identity wrappers `givenStep`, `whenStep`, and `thenStep`, along with `ScenarioContext`, `GivenChain`, `GivenStep`, `WhenStep`, and `ThenStep`. Each wrapper returns its callback unchanged while providing the corresponding generic step signature. `@archont561/bun-test-utils/snap` exposes only the global snapshot serializer helpers; its lifecycle and diagnostics are specified in [spec 0013](./0013-snapshot-testing.md). `@archont561/bun-test-utils/vcr` exposes `defineCallbackSerializer` and `CallbackSerializer` for reversible cassette callback serializers ([spec 0012](./0012-http-cassette-vcr.md), [ADR 0034](../adr/0034-cassette-callback-serializers.md)). The root runtime surface is exactly `describe`, `expect`, and `test`; helper subpaths expose no runners or fixtures, and no other root helper or `test.*` member is added. ADR 0023 records the pre-release rename from `propTestSchema` to `defineArbitraries`; ADR 0024 records public-boundary dogfooding.
+`@archont561/bun-test-utils/pbt` exports `defineArbitraries` and the PBT type aliases `FastCheckApi`, `ArbitraryInput`, and `GeneratedValues`. `@archont561/bun-test-utils/bdd` exports the phase-specific identity wrappers `givenStep`, `whenStep`, and `thenStep`, along with `ScenarioContext`, `GivenChain`, `GivenStep`, `WhenStep`, and `ThenStep`. Each wrapper returns its callback unchanged while providing the corresponding generic step signature. `@archont561/bun-test-utils/snap` exposes only the global snapshot serializer helpers; its lifecycle and diagnostics are specified in [spec 0013](./0013-snapshot-testing.md). `@archont561/bun-test-utils/vcr` exposes `defineCallbackSerializer` and `CallbackSerializer` for reversible cassette callback serializers ([spec 0012](./0012-http-cassette-vcr.md), [ADR 0034](../adr/0034-cassette-callback-serializers.md)). The root runtime surface is exactly `describe`, `expect`, and `test` (plus the `test.*` members required by R4, R14, and R15); helper subpaths expose no runners or fixtures, and no other root helper is added. ADR 0023 records the pre-release rename from `propTestSchema` to `defineArbitraries`; ADR 0024 records public-boundary dogfooding.
 
 The declarations still reference `fast-check` types for PBT inference. The peer remains optional at runtime, but a strict TypeScript consumer with `skipLibCheck: false` may need to install `fast-check` even for ordinary root imports; `skipLibCheck: true` avoids checking a missing optional peer declaration. Neither the PBT definition helper nor the BDD step wrappers load an optional peer at runtime.
 
@@ -75,7 +77,35 @@ The contractual network-guard template is also requirement R10 in
 
 ## Out of scope
 
-Public `test.each`, `test.skip/only/todo` fixture variants, custom matchers, runner/fixture subpaths, capability helper subpaths other than `./pbt`, `./bdd`, `./snap`, and `./vcr`, and additional root helpers.
+Public `test.each` and `describe.each` (row/context convention undecided,
+[ADR 0043](../adr/0043-fixture-aware-test-modifiers.md)), custom matchers,
+runner/fixture subpaths, capability helper subpaths other than `./pbt`,
+`./bdd`, `./snap`, and `./vcr`, and additional root helpers. `test.skip`,
+`test.only`, `test.todo`, and the rest of Bun's modifier surface are no longer
+out of scope: R14 adds them.
+
+### Test modifiers and tags (ADR 0043, ADR 0044)
+
+`makeAwareTest()` builds the modifier surface described by R14 by wrapping the
+same body factory with a different Bun registration node (`bunTest.skip`,
+`bunTest.skipIf(cond)`, and so on), so a modifier registration keeps fixture
+injection and LIFO unwind. Modifier values are registration functions, not
+composable test objects, and `test.each` is deliberately absent. The BDD and
+PBT layers do not reimplement the surface: `delegateModifiers()` in core binds
+each modifier of a wrapper to the core runner that wrapper already resolves,
+so one implementation reaches every layer.
+
+Non-running registrations (`skip`, `todo`, and a conditional whose condition
+makes the test non-running) and tag-filtered registrations defer fixture
+detection and `resolveOrder()` into the body, which Bun never calls. Running
+registrations keep eager validation and the contractual unknown-fixture
+message (R11).
+
+R15 consumes `options.tags` at declaration time against
+`BUN_TEST_UTILS_TAGS` and registers a non-matching test through
+`bunTest.skip`. The filter syntax, semantics, and the decision not to wrap
+`describe` are recorded in ADR 0044; no new exported value is introduced, so
+the public API baseline in `scripts/public-api.txt` does not move.
 
 ## Verification
 
@@ -87,3 +117,5 @@ Public `test.each`, `test.skip/only/todo` fixture variants, custom matchers, run
 | R9-R10 | wrapper collision conformance in `packages/bun-test-utils/tests/conformance/capabilities.test.ts` |
 | R11 | exact contract tests in `packages/core/tests/error-messages.test.ts` and `packages/std/tests/network-guard.test.ts` |
 | R12-R13 | `packages/bun-test-utils/tests/conformance/public-api.test.ts` and shared definitions verify helper subpath exports, identity semantics, contextual factory/step typing, and inferred values |
+| R14 | `packages/core/tests/modifiers.test.ts` (surface, skip/only/todo semantics, fixture deferral) and `packages/bun-test-utils/tests/conformance/public-api.test.ts` (every layer delegates) |
+| R15 | `packages/core/tests/tags.test.ts` (parser and filtering semantics) and `packages/bun-test-utils/e2e/bdd/features/test-modifiers.feature` (public surface under `BUN_TEST_UTILS_TAGS`) |

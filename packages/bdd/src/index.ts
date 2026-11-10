@@ -1,5 +1,6 @@
 import { createRequire } from "node:module";
 import {
+  delegateModifiers,
   type FixtureAwareTest,
   type FixtureContext,
   type FixtureMap,
@@ -89,6 +90,10 @@ export function withBDDTesting(
     value: ensureBddIntegrationInstalled,
     enumerable: false,
   });
+
+  // ADR 0043: the modifier surface is core's, delegated rather than copied,
+  // so the BDD layer cannot drift from it.
+  delegateModifiers(bddTest, () => coreTest);
 
   const fixtureMap = (coreTest as FixtureMapCarrier)[FIXTURE_MAP_SYMBOL];
   if (fixtureMap) {

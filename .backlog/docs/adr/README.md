@@ -46,5 +46,7 @@ Short, immutable records of *why*. Supersede rather than rewrite.
 | [0040](./0040-global-callback-serializers.md) | Process-wide callback serializer registration for cassette preloads | accepted; amends 0034 points 3 and 5 |
 | [0041](./0041-callable-snapshot-wrapper.md) | Callable snapshot wrapper with explicit names | accepted |
 | [0042](./0042-release-versions-from-pending-changesets.md) | Release versions are cut from pending changesets | accepted |
+| [0043](./0043-fixture-aware-test-modifiers.md) | Expose Bun's test modifiers on the fixture-aware test | accepted |
+| [0044](./0044-tag-filtering-without-a-runner-flag.md) | Tag-based test filtering without a runner flag | accepted |
 
 Start from [`TEMPLATE.md`](./TEMPLATE.md).
