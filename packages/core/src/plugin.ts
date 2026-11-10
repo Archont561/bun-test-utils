@@ -66,10 +66,16 @@ export {
   destructuredKeys,
   detectFixtures,
 } from "./detect.ts";
+export type { TestRegistrar } from "./factory.ts";
 export {
   createFixture,
   createTest,
   createTestWithFixtures,
+  delegateModifiers,
+  makeAwareTest,
+  makeTest,
+  TEST_MODIFIER_CONDITIONAL_KEYS,
+  TEST_MODIFIER_KEYS,
 } from "./factory.ts";
 export type { FetchMatcher } from "./fetch.ts";
 export {
@@ -78,7 +84,6 @@ export {
   slugifyFilename,
 } from "./fetch.ts";
 export { resolveOrder } from "./graph.ts";
-
 export {
   callerFile,
   configureDiagnostics,
@@ -91,6 +96,13 @@ export {
   teardownSession,
 } from "./lifecycle.ts";
 export { executeScenarioSteps } from "./scenario.ts";
+export type { TagFilter } from "./tags.ts";
+export {
+  currentTagFilter,
+  parseTagFilter,
+  TAG_FILTER_ENV,
+  tagFilterAccepts,
+} from "./tags.ts";
 
 /* -------------------------------------------------------------------------- */
 /* Public API                                                                 */

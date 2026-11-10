@@ -17,6 +17,33 @@ test("public root exports only the approved runner values", () => {
   expect(Object.keys(api).sort()).toEqual(["describe", "expect", "test"]);
 });
 
+test("the root test carries Bun's modifiers and no test.each", () => {
+  // ADR 0043: every layer between the root and the engine delegates, so this
+  // asserts the surface a consumer actually imports, not the core runner.
+  for (const name of [
+    "only",
+    "skip",
+    "todo",
+    "failing",
+    "concurrent",
+    "serial",
+  ] as const) {
+    expect(typeof test[name]).toBe("function");
+  }
+  for (const name of [
+    "if",
+    "skipIf",
+    "todoIf",
+    "failingIf",
+    "concurrentIf",
+    "serialIf",
+  ] as const) {
+    expect(typeof test[name](false)).toBe("function");
+  }
+  expect("each" in test).toBe(false);
+  expect(typeof test.extend({}).skipIf).toBe("function");
+});
+
 test("typed helpers are scoped to their capability subpaths", () => {
   expect(Object.keys(pbtApi).sort()).toEqual(["defineArbitraries"]);
   expect("propTestSchema" in pbtApi).toBe(false);

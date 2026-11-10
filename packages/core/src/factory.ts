@@ -15,6 +15,7 @@ import { callerFile } from "./helpers.ts";
 import { enterFile, instantiate, runWithUnwind } from "./lifecycle.ts";
 import { scenarioFactory } from "./scenario.ts";
 import { FIXTURE_MAP_SYMBOL } from "./state.ts";
+import { currentTagFilter, tagFilterAccepts } from "./tags.ts";
 import type {
   FixtureAwareTest,
   FixtureContext,
@@ -23,17 +24,45 @@ import type {
   IterateFn,
   ScenarioFactory,
   TestFn,
+  TestModifierFn,
+  TestModifiers,
   TestOptions,
 } from "./types.ts";
 
-export function makeTest(file: string, map: FixtureMap): TestFn {
+/**
+ * The registration call a test ultimately performs — Bun's own `test`, or one
+ * of its modifiers (`test.skip`, `test.skipIf(cond)`, …).
+ */
+export type TestRegistrar = (
+  name: string,
+  body: () => void | Promise<void>,
+  timeout?: number,
+) => void;
+
+/**
+ * Declares one test. `register` selects how Bun records the declaration, so
+ * modifiers reuse the whole fixture body; `deferGraph` postpones fixture
+ * validation for declarations that Bun will never run (ADR 0043 point 3).
+ */
+export function makeTest(
+  file: string,
+  map: FixtureMap,
+  register: TestRegistrar = bunTest,
+  deferGraph = false,
+): TestFn {
   const abs = resolve(file);
   return (name, fn, opts?: TestOptions) => {
     const requested = opts?.fixtures ?? detectFixtures(fn, 0);
-    const order = resolveOrder(requested, map, abs);
     const testName = name;
+    // A declaration filtered out by BUN_TEST_UTILS_TAGS is registered as
+    // skipped and never resolves its fixtures (ADR 0044 point 4).
+    const filteredOut = !tagFilterAccepts(currentTagFilter(), opts?.tags);
+    const defer = deferGraph || filteredOut;
+    const order = defer ? undefined : resolveOrder(requested, map, abs);
+    const registrar = filteredOut ? bunTest.skip : register;
 
     const body = async () => {
+      const resolved = order ?? resolveOrder(requested, map, abs);
       await enterFile(abs);
       const testStack: Array<() => Promise<void>> = [];
       const ctx: FixtureContext = { testFile: abs, testName };
@@ -62,23 +91,23 @@ export function makeTest(file: string, map: FixtureMap): TestFn {
             const iterStack: Array<() => Promise<void>> = [];
             return runWithUnwind(iterStack, async () => {
               const iterCtx: FixtureContext = { testFile: abs, testName };
-              await buildAll(iterCtx, iterStack, order);
+              await buildAll(iterCtx, iterStack, resolved);
               return await fn2(iterCtx);
             });
           }) satisfies IterateFn;
           await buildAll(
             ctx,
             testStack,
-            order.filter((n) => scopeOf(map[n]!) !== "test"),
+            resolved.filter((n) => scopeOf(map[n]!) !== "test"),
           );
         } else {
-          await buildAll(ctx, testStack, order);
+          await buildAll(ctx, testStack, resolved);
         }
         await fn(ctx);
       });
     };
-    if (opts?.timeout === undefined) bunTest(testName, body);
-    else bunTest(testName, body, opts.timeout);
+    if (opts?.timeout === undefined) registrar(testName, body);
+    else registrar(testName, body, opts.timeout);
   };
 }
 
@@ -123,6 +152,85 @@ export function createTestWithFixtures(
   return makeAwareTest(fixtures, resolve(testFile), false);
 }
 
+/** Direct (non-conditional) Bun modifiers, in declaration order. */
+export const TEST_MODIFIER_KEYS = [
+  "only",
+  "skip",
+  "todo",
+  "failing",
+  "concurrent",
+  "serial",
+] as const;
+
+/** Conditional Bun modifier factories, in declaration order. */
+export const TEST_MODIFIER_CONDITIONAL_KEYS = [
+  "if",
+  "skipIf",
+  "todoIf",
+  "failingIf",
+  "concurrentIf",
+  "serialIf",
+] as const;
+
+type BunTestNode = typeof bunTest;
+
+/**
+ * Builds one modifier registration function (ADR 0043 point 1).
+ *
+ * `node` selects the Bun `Test` the declaration goes through — `bunTest.skip`,
+ * `bunTest.skipIf(cond)`, … — so the modifier behaves exactly as Bun documents
+ * while the body still resolves and unwinds fixtures. It is a selector, not a
+ * value, because some of Bun's own getters are guarded: reading `test.only`
+ * under `CI` throws to stop tests being skipped by accident, and building the
+ * surface must not trip that guard for a runner that never uses `.only`.
+ * `deferGraph` marks a declaration Bun will not run, which postpones fixture
+ * validation.
+ */
+function modifierFn(
+  resolveFile: () => string,
+  map: FixtureMap,
+  node: () => BunTestNode,
+  deferGraph: boolean,
+): TestModifierFn {
+  return (name, fn, opts) =>
+    makeTest(resolveFile(), map, node(), deferGraph)(name, fn, opts);
+}
+
+/**
+ * Copies the modifier surface of `source()` onto `target`, delegating each
+ * call lazily.
+ *
+ * The BDD and PBT layers rebuild the runner around their own fixture map, so
+ * they re-attach core's modifiers instead of reimplementing them; the source
+ * is a function because those layers resolve their per-file runner per call
+ * (ADR 0043 point 6).
+ */
+export function delegateModifiers<T extends object>(
+  target: T,
+  source: () => FixtureAwareTest,
+): T & TestModifiers {
+  const delegate = target as T & TestModifiers;
+
+  for (const key of TEST_MODIFIER_KEYS) {
+    Object.defineProperty(delegate, key, {
+      value: (...args: Parameters<TestModifierFn>) => source()[key](...args),
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  }
+  for (const key of TEST_MODIFIER_CONDITIONAL_KEYS) {
+    Object.defineProperty(delegate, key, {
+      value: (condition: boolean) => source()[key](condition),
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  }
+
+  return delegate;
+}
+
 export function makeAwareTest(
   fixtures: FixtureMap = {},
   fixedFile?: string,
@@ -142,6 +250,32 @@ export function makeAwareTest(
     scenarioFactory(resolveFile(), map, makeTest)(title)) as ScenarioFactory;
   aware.scenario.prop = (title, strategies) =>
     scenarioFactory(resolveFile(), map, makeTest).prop(title, strategies);
+
+  // ADR 0043: Bun's modifier surface, with the fixture body intact. Skip-like
+  // declarations defer fixture validation because Bun never runs their body.
+  aware.only = modifierFn(resolveFile, map, () => bunTest.only, false);
+  aware.skip = modifierFn(resolveFile, map, () => bunTest.skip, true);
+  aware.todo = modifierFn(resolveFile, map, () => bunTest.todo, true);
+  aware.failing = modifierFn(resolveFile, map, () => bunTest.failing, false);
+  aware.concurrent = modifierFn(
+    resolveFile,
+    map,
+    () => bunTest.concurrent,
+    false,
+  );
+  aware.serial = modifierFn(resolveFile, map, () => bunTest.serial, false);
+  aware.if = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.if(condition), !condition);
+  aware.skipIf = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.skipIf(condition), condition);
+  aware.todoIf = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.todoIf(condition), condition);
+  aware.failingIf = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.failingIf(condition), false);
+  aware.concurrentIf = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.concurrentIf(condition), false);
+  aware.serialIf = (condition) =>
+    modifierFn(resolveFile, map, () => bunTest.serialIf(condition), false);
   Object.defineProperty(aware, FIXTURE_MAP_SYMBOL, {
     value: map,
     enumerable: false,

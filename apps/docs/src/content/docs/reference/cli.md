@@ -83,6 +83,7 @@ scanned root; when nothing matches, it says how many files it scanned.
 | `BUN_TEST_UTILS_DEBUG` | Set to `1` to print opt-in engine diagnostics to stderr: session-teardown failures and cassette refresh warnings. It is not a general verbose log. |
 | `BUN_TEST_UTILS_WEB_ENV` | Selects the `webPage` backend: `dom` (default), or `browser` / `playwright`. |
 | `VCR_MODE` | Selects the cassette mode: `auto` (default), `record`, `replay`, or `passthrough`. |
+| `BUN_TEST_UTILS_TAGS` | Selects tagged tests: comma- or whitespace-separated tags, `!tag` to exclude. See [Selecting tests by tag](/bun-test-utils/reference/core/#selecting-tests-by-tag). |
 | `SNAPSHOT_MODE` | Selects the snapshot mode: `match` (default), `update`, or `ci`. `ci` is selected automatically when `CI` is set. |
 | `CI` | Makes `auto` cassettes refuse to record, and makes snapshots run in `ci` mode. Set by every mainstream CI provider. |
 

@@ -120,6 +120,49 @@ export interface TestOptions {
    * inside one `bun test` case.
    */
   iterate?: boolean;
+  /**
+   * Semantic labels for this test. When `BUN_TEST_UTILS_TAGS` is set, a
+   * declaration whose tags do not pass the filter is registered as skipped
+   * without resolving its fixtures (ADR 0044). Tags are matched exactly and
+   * case-sensitively; empty entries are ignored.
+   */
+  tags?: readonly string[];
+}
+
+/**
+ * A registration function returned by a test modifier — `test.skip(...)`,
+ * `test.skipIf(condition)(...)`, and their siblings.
+ *
+ * Modifiers register a test; they are not composable test objects, so they
+ * expose no `extend`, `prop`, or `scenario` (ADR 0043).
+ */
+export type TestModifierFn = (
+  name: string,
+  fn: (ctx: FixtureContext) => void | Promise<void>,
+  opts?: TestOptions,
+) => void;
+
+/**
+ * Bun's test-declaration modifiers, bound to the fixture-aware runner.
+ *
+ * The direct members register immediately; the conditional factories take a
+ * condition and return a registration function, exactly like `bun:test`
+ * (ADR 0043). `test.each` is deliberately absent until a row/context
+ * convention is decided.
+ */
+export interface TestModifiers {
+  only: TestModifierFn;
+  skip: TestModifierFn;
+  todo: TestModifierFn;
+  failing: TestModifierFn;
+  concurrent: TestModifierFn;
+  serial: TestModifierFn;
+  if: (condition: boolean) => TestModifierFn;
+  skipIf: (condition: boolean) => TestModifierFn;
+  todoIf: (condition: boolean) => TestModifierFn;
+  failingIf: (condition: boolean) => TestModifierFn;
+  concurrentIf: (condition: boolean) => TestModifierFn;
+  serialIf: (condition: boolean) => TestModifierFn;
 }
 
 export type ScenarioContext<S extends object = Record<string, unknown>> =
@@ -185,10 +228,11 @@ export type ScenarioFactory = {
   prop: (name: string, strategies: Record<string, unknown>) => GivenChain;
 };
 
-export type FixtureAwareTest = TestFn & {
-  extend: (fixtures: FixtureMap) => FixtureAwareTest;
-  scenario: ScenarioFactory;
-};
+export type FixtureAwareTest = TestFn &
+  TestModifiers & {
+    extend: (fixtures: FixtureMap) => FixtureAwareTest;
+    scenario: ScenarioFactory;
+  };
 
 export type TestFn = (
   name: string,

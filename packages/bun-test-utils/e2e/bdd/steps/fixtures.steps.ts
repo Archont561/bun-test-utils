@@ -92,6 +92,19 @@ When("I run the test suite with CI set", (state) => ({
   lastRun: runTests(theProject(state), { CI: "true" }),
 }));
 
+When("I run the test suite with CI disabled", (state) => ({
+  ...state,
+  lastRun: runTests(theProject(state), { CI: "false" }),
+}));
+
+When(
+  "I run the test suite with BUN_TEST_UTILS_TAGS set to {string}",
+  (state, [tags]) => ({
+    ...state,
+    lastRun: runTests(theProject(state), { BUN_TEST_UTILS_TAGS: tags }),
+  }),
+);
+
 When("I rewrite the file {string}:", (state, [path], argument) => {
   writeProjectFile(theProject(state), path, docString(argument));
   return state;
@@ -135,6 +148,11 @@ Then("the command fails", (state) => {
 
 Then("the output contains {string}", (state, [needle]) => {
   expect(theRun(state).output).toContain(needle);
+  return state;
+});
+
+Then("the output does not contain {string}", (state, [needle]) => {
+  expect(theRun(state).output).not.toContain(needle);
   return state;
 });
 
