@@ -92,6 +92,11 @@ When("I run the test suite with CI set", (state) => ({
   lastRun: runTests(theProject(state), { CI: "true" }),
 }));
 
+When("I run the test suite with CI disabled", (state) => ({
+  ...state,
+  lastRun: runTests(theProject(state), { CI: "false" }),
+}));
+
 When(
   "I run the test suite with BUN_TEST_UTILS_TAGS set to {string}",
   (state, [tags]) => ({

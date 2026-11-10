@@ -165,14 +165,20 @@ test.skipIf(false)("typo", async ({ thign }) => {
 });
 
 test("test.only runs only the marked test", () => {
-  const run = runScratch(`${header}
+  // Bun disables `.only` while CI is set; the package passes that guard
+  // through, so the assertion itself has to opt out of it.
+  const run = runScratch(
+    `${header}
 test.only("only me", async ({ thing }) => {
   console.log("ONLY", thing.ready);
 });
 test("not me", () => {
   console.log("OTHER");
 });
-`);
+`,
+    [],
+    { CI: "false" },
+  );
 
   expect(run.exitCode).toBe(0);
   expect(run.output).toContain("ONLY true");

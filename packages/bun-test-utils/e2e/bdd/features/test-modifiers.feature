@@ -82,7 +82,7 @@ Feature: Test modifiers and tag filtering
         console.log("OTHER");
       });
       """
-    When I run the test suite
+    When I run the test suite with CI disabled
     Then the output contains "SELECTED selected"
     And the output does not contain "OTHER"
 

@@ -68,7 +68,14 @@ only public runner; this record reverses the skip/only/todo part of it.
    `describe.only` / `describe.skip` / `describe.skipIf` / `describe.each`
    behave exactly as Bun documents and are not affected by this record.
 
-6. **The surface is declared once and delegated through the layers.** The
+6. **Bun's own guards pass through.** Some of Bun's modifier getters are
+   guarded — reading `test.only` while `CI` is set throws to stop tests being
+   skipped by accident. The surface therefore resolves Bun's registration node
+   when a modifier is called, not when the runner is built, so declaring the
+   runner under CI is unaffected; a consumer who actually calls `test.only`
+   there gets Bun's message and Bun's documented `CI=false` override.
+
+7. **The surface is declared once and delegated through the layers.** The
    modifier recursion lives in core (`makeAwareTest` builds each modifier from
    the corresponding Bun `Test` node). The BDD and PBT wrappers do not
    reimplement it; they delegate each modifier call to the core runner they

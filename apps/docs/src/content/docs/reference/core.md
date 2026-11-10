@@ -218,6 +218,11 @@ Two consequences follow from how the modifiers are wired:
   Neither exposes `extend`, `prop`, or `scenario` — composition belongs to
   `test`, whose fixture map is the thing being extended.
 
+Bun's own guard applies unchanged: with `CI` set, `test.only` throws ("`.only`
+is disabled in CI environments to prevent accidentally skipping tests"), and
+setting `CI=false` overrides it. Declaring the runner never reads that getter,
+so an ordinary CI run is unaffected.
+
 `test.each` and `describe.each` are intentionally not provided: Bun passes table
 rows positionally and fixtures arrive as the body's first argument, so the two
 conventions need a decision of their own. `describe` is Bun's own function, so
