@@ -1,6 +1,6 @@
 {
   "name": "@archont561/bun-test-utils",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "General-purpose test extension for the Bun test runner covering unit, integration, and e2e tests — Playwright-style typed fixtures composed with test.extend(), with scopes and LIFO teardown, plus BDD, property-based testing, snapshots, HTTP record/replay, and browser testing.",
   "type": "module",
   "license": "MIT OR Apache-2.0",
