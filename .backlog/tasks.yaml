@@ -5794,7 +5794,7 @@ tasks:
       delegate it through the bdd and pbt layers, defer fixture-graph resolution
       for declarations Bun never runs, document it, and record ADR 0043."
     source_links: []
-    status: ready
+    status: done
     priority: P2
     labels:
       - test-runner
@@ -5826,7 +5826,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-11-10T14:14:48.319Z
-    updated_at: 2026-11-10T14:14:48.319Z
+    updated_at: 2026-11-10T14:16:50.691Z
   - id: task_109
     title: Tag-based test selection through BUN_TEST_UTILS_TAGS (ADR 0044)
     description: "GitHub issue #67. The suite had no semantic grouping: only
@@ -5836,7 +5836,7 @@ tasks:
       declarations through Bun's test.skip so they stay visible, and never
       resolve their fixtures. Document it, and record ADR 0044."
     source_links: []
-    status: ready
+    status: done
     priority: P2
     labels:
       - test-runner
@@ -5867,7 +5867,7 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-11-10T14:14:51.531Z
-    updated_at: 2026-11-10T14:14:51.531Z
+    updated_at: 2026-11-10T14:16:51.227Z
   - id: task_110
     title: "Repair the mangled issue bodies and close #65 now that describe ships"
     description: 'Issues #65, #66, and #67 were filed on 2026-10-21 with every
@@ -5877,7 +5877,7 @@ tasks:
       comment on #65 that describe has been re-exported since 0.1.0 before
       closing it, and link the implementing pull requests on #66 and #67.'
     source_links: []
-    status: ready
+    status: done
     priority: P3
     labels:
       - triage
@@ -5908,4 +5908,4 @@ tasks:
       push_status: false
       push_comments: false
     created_at: 2026-11-10T14:14:52.679Z
-    updated_at: 2026-11-10T14:14:52.679Z
+    updated_at: 2026-11-10T14:16:51.784Z
